@@ -1,6 +1,7 @@
 # Práctica 01: Construcción y simulación computacional de un modelo matemático
 
 **Asignatura:** Simulación (Ciclo 5) · **Carrera de Computación, UNL**
+**Estudiante:** Ana Panamito 
 
 Simulación del comportamiento de la atmósfera durante 24 horas para determinar en qué horas el modelo considera que existe posibilidad de lluvia.
 
@@ -21,9 +22,6 @@ Simulación del comportamiento de la atmósfera durante 24 horas para determinar
 pip install numpy matplotlib
 python3 practica01.py
 
-# Java
-javac Practica01.java
-java Practica01
 ```
 
 ## Conceptos clave
@@ -65,6 +63,19 @@ Como los pesos suman 1 y cada variable está entre 0 y 1, I también queda entre
 
 Con ambos modelos, la lluvia se predice desde las 16:00 hasta las 22:00, con el pico a las 18:00 (I ≈ 0.89).
 
-## Nota
+## Preguntas de control 
+**a.	¿Qué es un modelo matemático?**
+Es un modelo simplificado de un fenómeno o sistema del mundo real, construido usando variables, parámetros y relaciones matemáticas (como ecuaciones, fórmulas y reglas) para describir, simular y predecir el comportamiento del sistema. En este ejercicio, el modelo se define como I = 0,5H + 0,3N + 0,2Tf, que se utiliza para predecir la probabilidad de lluvia.
+**b.	¿Cuál es la diferencia entre variable y parámetro?**
+Variable: Valor que cambia durante una simulación o en función de condiciones específicas. Ejemplo: humedad, turbidez y temperatura por hora.
+Parámetro: Valor fijo que determina el comportamiento del modelo y puede ser ajustado entre simulaciones. Ejemplo: pesos de 0,5, 0,3 y 0,2, con umbrales de 0.40, 0.60 y 0.75.
+**c.	¿Qué representa P₀?**
+En el modelo exponencial P(t) = P₀·e^(rt), P₀ representa el valor inicial de la cantidad en análisis (población, dinero, etc.) en el tiempo t = 0. Este es el punto de referencia desde el cual el modelo comienza a crecer o decrecer.
+**d.	¿Qué ocurre cuando r < 0?**
+La función tiene decrecimiento exponencial: P disminuye con el tiempo y tiende a cero sin llegar a ser negativa.Es el comportamiento de fenómenos como la desintegración radiactiva o la depreciación. Si r > 0 hay crecimiento, y si r = 0 el valor se mantiene constante en P₀
+**e.	¿Qué limitaciones tiene el modelo exponencial?**
+Supone que la tasa r es constante, algo poco realista a largo plazo. Con r > 0 crece sin límite, pero en la realidad hay restricciones. No considera factores externos, como competencia, enfermedades o cambios del entorno. Solo describe bien el comportamiento en un rango corto de tiempo. Por eso, para casos más realistas se usan modelos como el logístico, que incorpora un límite de capacidad.
 
-Las preguntas de control de la guía mencionan r, P₀ y el modelo exponencial, que no corresponden a esta práctica. Conviene confirmar con el docente cuáles debes responder.
+## Declaración de IA 
+Para el desarrollo de esta práctica utilicé Claude (Anthropic) como herramienta de apoyo. La IA colaboró en la explicación de conceptos de modelación matemática, en la generación de una propuesta de código en Python y Java, en la elaboración de las tablas y gráficas, y en la redacción de borradores del README y del procedimiento. Posteriormente revisé el código, lo ejecuté y verifiqué los resultados, comprendí la lógica del modelo (normalización, factor de temperatura, índice y reglas de clasificación) y asumo la responsabilidad del contenido presentado, en concordancia con los principios de transparencia, responsabilidad y honestidad de la asignatura.
+
