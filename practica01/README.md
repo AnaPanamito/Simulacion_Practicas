@@ -14,14 +14,6 @@ Simulación del comportamiento de la atmósfera durante 24 horas para determinar
 | `grafica_indice_ajustado.png` | Índice I por hora con el modelo ajustado. |
 | `grafica_variables.png` | H, N y Tf normalizadas por hora. |
 
-## Cómo ejecutar
-
-```bash
-# Python (requiere numpy y matplotlib)
-pip install numpy matplotlib
-python3 practica01.py
-
-```
 
 ## Conceptos clave
 
