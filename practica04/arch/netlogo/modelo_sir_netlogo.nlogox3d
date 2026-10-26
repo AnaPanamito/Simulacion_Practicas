@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<model version="NetLogo 3D 7.0.4" snapToGrid="false">
+  <code><![CDATA[; ============================================================
+; Practica 004 - Modelo SIR en NetLogo (Python vs NetLogo)
+; NetLogo genera su propia simulacion (botones Preparar/Avanzar)
+; y IMPORTA los resultados de Python desde resultados_python.csv
+; ============================================================
+extensions [csv]
+
+globals [
+  beta gamma poblacion pasos
+  datos-python datos-netlogo
+]
+turtles-own [estado-sir]
+
+; Ecuaciones diferenciales de la guia (referencia matematica)
+to-report derivadas-sir [susceptibles infectados recuperados]
+  let total susceptibles + infectados + recuperados
+  if total <= 0 [ error "La poblacion debe ser positiva" ]
+  let contagios beta * susceptibles * infectados / total
+  let recuperaciones gamma * infectados
+  report (list (0 - contagios) (contagios - recuperaciones) recuperaciones)
+end
+
+to-report numero-reproductivo-basico
+  if gamma <= 0 [ error "Gamma debe ser positiva" ]
+  report beta / gamma
+end
+
+to preparar
+  clear-all
+  set beta 0.30
+  set gamma 0.10
+  set poblacion 100
+  set pasos 100
+  random-seed 42
+  create-turtles poblacion [
+    setxy random-xcor random-ycor
+    set estado-sir "S"
+    set color blue
+    set shape "circle"
+    set size 1.2
+  ]
+  let infectados-iniciales 5
+  ask n-of infectados-iniciales turtles [ set estado-sir "I" set color red ]
+  set datos-python []
+  set datos-netlogo []
+  reset-ticks
+  guardar-registro
+  show (word "S inicial=" count turtles with [estado-sir = "S"]
+    ", I inicial=" count turtles with [estado-sir = "I"]
+    ", R0=" numero-reproductivo-basico)
+  show (word "dS, dI, dR iniciales: "
+    (derivadas-sir (poblacion - infectados-iniciales) infectados-iniciales 0))
+end
+
+to avanzar
+  if ticks >= pasos [ stop ]
+  let infectados-anteriores count turtles with [estado-sir = "I"]
+  let probabilidad-contagio (1 - ((1 - beta / poblacion) ^ infectados-anteriores))
+  ; Agentsets separados: los recien infectados no se recuperan hasta el proximo paso.
+  let infectados-actuales turtles with [estado-sir = "I"]
+  let susceptibles-actuales turtles with [estado-sir = "S"]
+  ask susceptibles-actuales [
+    if random-float 1 < probabilidad-contagio [ set estado-sir "I" set color red ]
+  ]
+  ask infectados-actuales [
+    if random-float 1 < gamma [ set estado-sir "R" set color green ]
+  ]
+  ask turtles [ rt random 360 fd 1 ]
+  tick
+  guardar-registro
+  actualizar-grafica-local
+end
+
+to ejecutar-todo
+  preparar
+  repeat pasos [ avanzar ]
+  cargar-python
+  exportar-netlogo
+end
+
+to guardar-registro
+  set datos-netlogo lput (list ticks
+    (count turtles with [estado-sir = "S"])
+    (count turtles with [estado-sir = "I"])
+    (count turtles with [estado-sir = "R"])) datos-netlogo
+end
+
+to exportar-netlogo
+  csv:to-file "resultados_netlogo.csv"
+    (fput (list "tiempo" "susceptibles" "infectados" "recuperados") datos-netlogo)
+  user-message "Se guardo resultados_netlogo.csv"
+end
+
+to cargar-python
+  set datos-python cargar-serie "resultados_python.csv"
+  actualizar-graficas-importadas
+end
+
+to-report cargar-serie [nombre-archivo]
+  if not file-exists? nombre-archivo [
+    user-message (word "Archivo no encontrado: " nombre-archivo
+      ". Guarda el modelo en la misma carpeta que el CSV.")
+    report []
+  ]
+  let filas csv:from-file nombre-archivo
+  if empty? filas [ report [] ]
+  let encabezado first filas
+  if encabezado != (list "tiempo" "susceptibles" "infectados" "recuperados") [
+    user-message (word "Encabezado inesperado: " encabezado)
+    report []
+  ]
+  report but-first filas
+end
+
+to actualizar-grafica-local
+  set-current-plot "SIR NetLogo"
+  clear-plot
+  graficar-series datos-netlogo
+end
+
+to actualizar-graficas-importadas
+  set-current-plot "SIR Python"
+  clear-plot
+  graficar-series datos-python
+  set-current-plot "Comparacion infectados"
+  clear-plot
+  graficar-columna datos-python 2 "Python"
+  graficar-columna datos-netlogo 2 "NetLogo"
+  set-current-plot "Comparacion susceptibles"
+  clear-plot
+  graficar-columna datos-python 1 "Python"
+  graficar-columna datos-netlogo 1 "NetLogo"
+  set-current-plot "Comparacion recuperados"
+  clear-plot
+  graficar-columna datos-python 3 "Python"
+  graficar-columna datos-netlogo 3 "NetLogo"
+end
+
+to graficar-series [datos]
+  graficar-columna datos 1 "S"
+  graficar-columna datos 2 "I"
+  graficar-columna datos 3 "R"
+end
+
+to graficar-columna [datos columna nombre-lapiz]
+  set-current-plot-pen nombre-lapiz
+  foreach datos [ fila -> plotxy (item 0 fila) (item columna fila) ]
+end]]></code>
+  <widgets>
+    <view3d wrappingAllowedZ="true" x="0" wrappingAllowedX="true" y="0" minPycor="-16" height="198" showTickCounter="true" patchSize="13.0" fontSize="10" wrappingAllowedY="true" width="198" tickCounterLabel="ticks" maxPycor="16" updateMode="0" frameRate="30.0" maxPzcor="0" maxPxcor="16" minPxcor="-16" minPzcor="0"></view3d>
+    <button x="10" y="10" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="180" display="1. Preparar">preparar</button>
+    <button x="10" y="57" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="180" display="2. Avanzar (forever)">avanzar</button>
+    <button x="10" y="104" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="180" display="Ejecutar todo (automatico)">ejecutar-todo</button>
+    <button x="10" y="151" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="180" display="3. Cargar Python (CSV)">cargar-python</button>
+    <button x="10" y="198" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="180" display="4. Exportar NetLogo (CSV)">exportar-netlogo</button>
+    <button x="10" y="245" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="180" display="Actualizar graficas">actualizar-graficas-importadas</button>
+    <monitor x="200" precision="0" y="10" height="60" fontSize="11" width="100" display="Susceptibles">count turtles with [estado-sir = "S"]</monitor>
+    <monitor x="310" precision="0" y="10" height="60" fontSize="11" width="100" display="Infectados">count turtles with [estado-sir = "I"]</monitor>
+    <monitor x="420" precision="0" y="10" height="60" fontSize="11" width="100" display="Recuperados">count turtles with [estado-sir = "R"]</monitor>
+    <monitor x="530" precision="0" y="10" height="60" fontSize="11" width="100" display="Tiempo (ticks)">ticks</monitor>
+    <monitor x="640" precision="2" y="10" height="60" fontSize="11" width="100" display="R0">numero-reproductivo-basico</monitor>
+    <plot x="450" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="Personas" y="80" xMin="0.0" height="214" legend="true" xMax="100.0" yMin="0.0" width="290" xAxis="Tiempo (pasos)" display="SIR NetLogo">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="S" color="-13345367" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="I" color="-2674135" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="R" color="-10899396" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+    </plot>
+    <plot x="810" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="Personas" y="65" xMin="0.0" height="214" legend="true" xMax="100.0" yMin="0.0" width="290" xAxis="Tiempo (pasos)" display="SIR Python">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="S" color="-13345367" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="I" color="-2674135" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="R" color="-10899396" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+    </plot>
+    <plot x="10" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="Personas" y="317" xMin="0.0" height="236" legend="true" xMax="100.0" yMin="0.0" width="320" xAxis="Tiempo (pasos)" display="Comparacion infectados">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="Python" color="-955883" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="NetLogo" color="-8630108" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+    </plot>
+    <plot x="340" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="Personas" y="306" xMin="0.0" height="236" legend="true" xMax="100.0" yMin="0.0" width="320" xAxis="Tiempo (pasos)" display="Comparacion susceptibles">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="Python" color="-955883" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="NetLogo" color="-8630108" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+    </plot>
+    <plot x="670" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="Personas" y="306" xMin="0.0" height="236" legend="true" xMax="100.0" yMin="0.0" width="320" xAxis="Tiempo (pasos)" display="Comparacion recuperados">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="Python" color="-955883" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+      <pen interval="1.0" mode="0" display="NetLogo" color="-8630108" legend="true">
+        <setup></setup>
+        <update></update>
+      </pen>
+    </plot>
+  </widgets>
+  <info>## QUE ES
+
+Practica 004 (Simulacion, UNL): modelo SIR con N=100, I(0)=5, beta=0.30, gamma=0.10, 100 pasos.
+NetLogo ejecuta su propia simulacion de agentes e IMPORTA el CSV generado por Python/SimPy para compararlos.
+
+## COMO USARLO
+
+1. Guardar este archivo en la MISMA carpeta que resultados_python.csv.
+2. Pulsar "Ejecutar todo (automatico)" o bien: Preparar, Avanzar, Cargar Python.
+3. Revisar las graficas de comparacion (infectados, susceptibles, recuperados).
+</info>
+  <turtleShapes>
+    <shape name="default" rotatable="true" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="5"></point>
+        <point x="40" y="250"></point>
+        <point x="150" y="205"></point>
+        <point x="260" y="250"></point>
+      </polygon>
+    </shape>
+    <shape name="circle" rotatable="false" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-1920102913" diameter="300" filled="true"></circle>
+    </shape>
+    <shape name="person" rotatable="false" editableColorIndex="0">
+      <circle x="110" y="5" marked="true" color="-1920102913" diameter="80" filled="true"></circle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"></point>
+        <point x="120" y="195"></point>
+        <point x="90" y="285"></point>
+        <point x="105" y="300"></point>
+        <point x="135" y="300"></point>
+        <point x="150" y="225"></point>
+        <point x="165" y="300"></point>
+        <point x="195" y="300"></point>
+        <point x="210" y="285"></point>
+        <point x="180" y="195"></point>
+        <point x="195" y="90"></point>
+      </polygon>
+      <rectangle endX="172" startY="79" marked="true" color="-1920102913" endY="94" startX="127" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="195" y="90"></point>
+        <point x="240" y="150"></point>
+        <point x="225" y="180"></point>
+        <point x="165" y="105"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"></point>
+        <point x="60" y="150"></point>
+        <point x="75" y="180"></point>
+        <point x="135" y="105"></point>
+      </polygon>
+    </shape>
+  </turtleShapes>
+  <linkShapes>
+    <shape name="default" curviness="0.0">
+      <lines>
+        <line x="-0.2" visible="false">
+          <dash value="0.0"></dash>
+          <dash value="1.0"></dash>
+        </line>
+        <line x="0.0" visible="true">
+          <dash value="1.0"></dash>
+          <dash value="0.0"></dash>
+        </line>
+        <line x="0.2" visible="false">
+          <dash value="0.0"></dash>
+          <dash value="1.0"></dash>
+        </line>
+      </lines>
+      <indicator>
+        <shape name="link direction" rotatable="true" editableColorIndex="0">
+          <line endX="90" startY="150" marked="true" color="-1920102913" endY="180" startX="150"></line>
+          <line endX="210" startY="150" marked="true" color="-1920102913" endY="180" startX="150"></line>
+        </shape>
+      </indicator>
+    </shape>
+  </linkShapes>
+  <previewCommands>setup repeat 75 [ go ]</previewCommands>
+</model>
