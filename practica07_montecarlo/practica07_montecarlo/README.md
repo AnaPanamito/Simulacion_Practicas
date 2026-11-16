@@ -1,8 +1,6 @@
 # Práctica Nro. 07 — Estimación de resultados mediante el método de Monte Carlo
 
 **Asignatura:** Simulación · **Ciclo:** 5 · **Carrera de Computación (FEIRNNR) — Universidad Nacional de Loja**
-**Unidad:** U2 — Generación de números pseudoaleatorios y generación de variables aleatorias
-**Resultado de aprendizaje R2:** Interpreta los resultados de una simulación bajo los principios de solidaridad, transparencia, responsabilidad y honestidad.
 
 ---
 
@@ -10,10 +8,6 @@
 
 Se estima el valor de π lanzando puntos aleatorios sobre el cuadrado [-1,1]×[-1,1] y contando cuántos caen dentro del círculo unitario inscrito. El experimento se implementa en **Python** (NumPy, Matplotlib, Pandas) y en **Java** (JDK 17+), con la misma semilla (42), y se comparan estimaciones, errores y tiempos.
 
-Objetivos (según la guía):
-1. Implementar un experimento Monte Carlo.
-2. Analizar la influencia del tamaño de muestra sobre el error.
-3. Comparar los resultados obtenidos en Python y Java.
 
 ## 2. Método y fórmula
 
@@ -159,13 +153,7 @@ Integrales multidimensionales, valoración de opciones, simulación de colas (M/
 3. La comparación Python/Java depende del generador y de la implementación: NumPy vectorizado fue más rápido; con el mismo algoritmo, Java lo fue. Con el LCG replicado los resultados numéricos son idénticos, lo que cumple el resultado esperado de la guía.
 4. La reproducibilidad por semilla permite auditar y contrastar simulaciones, pero un resultado aislado no debe presentarse como «el valor»: para conclusiones sólidas conviene repetir con varias semillas y reportar media e intervalo.
 
-## 12. Nota académica de honestidad y transparencia (R2)
 
-Este trabajo busca cumplir los principios de solidaridad, transparencia, responsabilidad y honestidad del resultado de aprendizaje R2:
+Declaración de uso de inteligencia artificial.
 
-- Los datos de la §6 provienen de ejecuciones reales de los programas incluidos, sin ajustes manuales; se indica el entorno y la semilla para poder reproducirlos. Los tiempos variarán en otros equipos y deben reemplazarse por los medidos por el estudiante.
-- Se declaran las limitaciones: una sola semilla por N (no se estima varianza entre ejecuciones), tiempos con ruido del sistema, y la diferencia entre algoritmos PRNG que impide la «misma secuencia» salvo con la réplica del §7.
-- **Declaración de uso de herramientas:** *[el estudiante debe completar aquí si utilizó asistentes de IA u otras fuentes, y confirmar que comprende el código y puede explicarlo y defenderlo en la defensa oral]*.
-- Fuente teórica: diapositivas de la semana 6 (bibliografía de la guía).
-
-**Autor/a:** ____________________  **Fecha:** ____________________
+Para el desarrollo de esta práctica utilicé el asistente de IA Claude (Anthropic). La herramienta me proporcionó una propuesta inicial del código en Python y Java, del script de comparación y de la estructura del informe, así como explicaciones teóricas sobre el método de Monte Carlo y los generadores pseudoaleatorios. Yo instalé el entorno, ejecuté ambos programas en mi computador, obtuve y capturé los resultados y evidencias, revisé el código y los resultados, redacté la metodología con mis propias palabras y adapté el análisis a los datos obtenidos. Me hago responsable del contenido entregado y puedo explicar y defender el código y los resultados.
