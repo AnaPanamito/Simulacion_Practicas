@@ -1,0 +1,4 @@
+lambda,media_teorica,media_experimental,error_media_pct,varianza_teorica,varianza_experimental,error_varianza_pct
+0.5,2.00000,2.01136,0.56792,4.00000,3.96286,0.92855
+1.0,1.00000,1.00568,0.56792,1.00000,0.99071,0.92855
+2.0,0.50000,0.50284,0.56792,0.25000,0.24768,0.92855

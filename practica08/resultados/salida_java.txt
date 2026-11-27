@@ -1,0 +1,24 @@
+=== 1. UNIFORMES U(0,1) ===
+N = 10000
+Media experimental    = 0.50348 (teorica 0.5)
+Varianza experimental = 0.08232 (teorica 0.08333)
+
+=== 2. TRANSFORMADA INVERSA (lambda = 0.5) ===
+Primeros 10 valores:
+  X[ 1] = 2.60070 (U = 0.72756)
+  X[ 2] = 2.29912 (U = 0.68322)
+  X[ 3] = 0.73842 (U = 0.30872)
+  X[ 4] = 0.64891 (U = 0.27708)
+  X[ 5] = 2.19053 (U = 0.66555)
+  X[ 6] = 4.67378 (U = 0.90337)
+  X[ 7] = 0.92021 (U = 0.36878)
+  X[ 8] = 0.64523 (U = 0.27575)
+  X[ 9] = 1.24595 (U = 0.46365)
+  X[10] = 3.05481 (U = 0.78290)
+Cantidad de datos generados: 10000
+
+=== 4/5. COMPARACION DE MEDIDAS ESTADISTICAS ===
+lambda  Media teo   Media exp   Err% med  Var teo     Var exp     Err% var 
+0.5     2.00000     2.01136     0.5679    4.00000     3.96286     0.9286   
+1.0     1.00000     1.00568     0.5679    1.00000     0.99071     0.9286   
+2.0     0.50000     0.50284     0.5679    0.25000     0.24768     0.9286   
